@@ -16,10 +16,26 @@
   <ul>
     <% todo.forEach(todo => { %>
     <li>
-      <%= todo.todo %> | <a href="/delete/todo/<%= todo._id %>">delete</a>
+      <span id="<%= todo._id %>"><%= todo.todo %></span> |
+      <span onclick="edit('<%= todo._id %>')">Edit</span> |
+      <a href="/delete/todo/<%= todo._id %>">delete</a>
     </li>
     <% }) %>
   </ul>
 </div>
 
 <%- include("./partials/footer") %>
+
+<script>
+  function edit(id) {
+    var element = document.getElementById(id);
+    var elementValue = element.innerText;
+    console.log(elementValue);
+    element.innerHTML = `
+        <form method="POST" action="/edit/todo/${id}"> 
+          <input type="text" value="${elementValue}" name="todo">
+          <button type="submit">save</button>
+        </form>
+    `;
+  }
+</script>
