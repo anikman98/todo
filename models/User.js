@@ -17,11 +17,28 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.post('save', async function(next) {
+//hashing the password
+userSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSalt();
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
+
+//login user method
+userSchema.statics.login = async function (email, password) {
+  const user = await this.findOne({ email: email });
+  if (user) {
+    const auth = await bcrypt.compare(password, user.password);
+    if (auth) {
+      return user;
+    } else {
+      console.log("email pass wrong");
+      throw Error("Incorect email and password combination!");
+    }
+  }
+  console.log("email not");
+  throw Error("Email not registered!");
+};
 
 const User = mongoose.model("user", userSchema);
 
